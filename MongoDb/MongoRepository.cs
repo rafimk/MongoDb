@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using System.Linq.Expressions;
+using MongoDB.Driver;
 using MongoDb.Entities;
 
 namespace MongoDb.MongoDb;
@@ -21,6 +22,12 @@ public class MongoRepository<T> : IRepository<T> where T : IEntity
         var filter = _filterBuilder.Eq(entity => entity.Id, id);
         return await _dbCollection.Find(filter).FirstOrDefaultAsync();
     }
+    
+    public async Task<T> FindOne(Expression<Func<T, bool>> filterExpression)
+    {
+        return await _dbCollection.Find(filterExpression).FirstOrDefaultAsync();
+    }
+
 
     public async Task CreateAsync(T entity)
     {

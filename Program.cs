@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using MongoDb.Dtos;
 using MongoDb.Entities;
 using MongoDb.MongoDb;
@@ -41,6 +42,16 @@ app.MapGet("/item/{id}", async (IRepository<Item> repository, Guid id) =>
         return item == null ? Results.NotFound() : Results.Ok(item.AsDto());
     })
 .WithName("GetByIdAsync")
+.WithOpenApi();
+
+app.MapGet("/item/find/{name}", async (IRepository<Item> repository, string name) =>
+{
+    Expression<Func<Item, bool>> filterExpression = item => item.Name == name;
+    var item = await repository.FindOne(filterExpression);
+
+    return item == null ? Results.NotFound() : Results.Ok(item.AsDto());
+})
+.WithName("FindAsync")
 .WithOpenApi();
 
 app.MapPost("/item", async (IRepository<Item> repository, CreateItemCommand command) =>
